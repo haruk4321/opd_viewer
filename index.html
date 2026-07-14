@@ -1,0 +1,109 @@
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>OPD システムビューアー Ver.12</title>
+  <script src="https://unpkg.com/cytoscape@3.24.0/dist/cytoscape.min.js"></script>
+  <style>
+    body { margin: 0; font-family: 'Meiryo', sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    #toolbar { background: #2c3e50; color: white; padding: 10px; display: flex; gap: 10px; align-items: center; z-index: 10; }
+    #main-container { display: flex; flex: 1; position: relative; overflow: hidden; }
+    #cy { flex: 1; background: #fdfdfd; }
+    #info-panel { width: 350px; background: white; border-left: 1px solid #ddd; display: flex; flex-direction: column; box-shadow: -2px 0 5px rgba(0,0,0,0.1); }
+    .panel-header { padding: 15px; border-bottom: 2px solid #3498db; background: #f8f9fa; }
+    .panel-content { flex: 1; padding: 15px; overflow-y: auto; } 
+    h3 { margin: 0; color: #2c3e50; font-size: 1.1em; }
+    .req-box { margin-bottom: 12px; padding: 10px; background: #f1f8ff; border-left: 4px solid #3498db; font-size: 0.85em; border-radius: 0 4px 4px 0; }
+    .req-name { font-weight: bold; color: #1a5a96; display: block; margin-bottom: 3px; }
+    .legend-panel { position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.95); padding: 8px 12px; border: 1px solid #bbb; border-radius: 5px; font-size: 10.5px; width: 250px; z-index: 100; max-height: 80vh; overflow-y: auto; }
+    .legend-line { width: 22px; height: 2px; margin-right: 8px; display: inline-block; vertical-align: middle; }
+    .legend-shape { width: 14px; height: 14px; margin-right: 8px; display: inline-block; border: 1.5px solid #555; background: #fff; vertical-align: middle; }
+    .legend-title { font-weight: bold; margin-bottom: 4px; display: block; border-bottom: 1px solid #eee; font-size: 11px; }
+    .legend-item { margin-bottom: 3px; display: flex; align-items: center; }
+    button { padding: 6px 12px; cursor: pointer; background: #34495e; color: white; border: none; border-radius: 4px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="toolbar"><strong>OPD ビューアー</strong><button onclick="cy.fit()">画面に合わせる</button></div>
+  <div id="main-container">
+    <div id="cy"></div>
+    <div id="info-panel"><div class="panel-header"><h3>要素詳細</h3></div><div id="details" class="panel-content">ノードを選択してください。</div></div>
+    <div class="legend-panel">
+      <span class="legend-title">1. リンクの凡例 (使用中)</span>
+      <div class="legend-item"><span class="legend-line" style="background:#000; height:1.5px;"></span> Consumption</div><div class="legend-item"><span class="legend-line" style="background:#000; height:3px;"></span> Result</div><div class="legend-item"><span class="legend-line" style="border-bottom:1.5px dashed #333;"></span> Instrument (破線)</div><div class="legend-item"><span class="legend-line" style="background:#aaa; height:1px;"></span> Enabling (細線/灰)</div><div class="legend-item"><span class="legend-line" style="background:#0066aa; height:2px;"></span> Aggregation (◇)</div>
+
+      <span class="legend-title" style="margin-top:8px;">2. 重要度＝太さ / 形＝要求種別</span>
+      <div class="legend-item"><span class="legend-shape" style="border-radius:50%; border-color:#F08080;"></span> ①機能要求 (楕円)</div>  
+      <div class="legend-item"><span class="legend-shape" style="border-radius:3px; border-color:#008000;"></span> ②非機能要求 (角丸四角)</div>
+      <div class="legend-item"><span class="legend-shape" style="clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); border-color:#95a5a6;"></span> ③外部要因 (八角形)</div>
+
+      <span class="legend-title" style="margin-top:8px;">3. 加重平均ポジティブ率と色の対応</span>
+      <div class="legend-item"><span class="legend-line" style="background:#F08080; height:8px; border-radius:4px;"></span> ポジティブ (>50%): 赤</div>  
+      <div class="legend-item"><span class="legend-line" style="background:#3498db; height:8px; border-radius:4px;"></span> ネガティブ (<50%): 青</div>
+
+    </div>
+  </div>
+  <script>
+    const cy = window.cy = cytoscape({
+      container: document.getElementById('cy'),
+      elements: {"elements": [{"data": {"id": "電気", "label": "電気", "type": "object", "description": "・電気 が 回転 によって消費される<br>・電気 が 発熱 によって消費される", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 900, "y": 0}}, {"data": {"id": "熱", "label": "熱", "type": "object", "description": "・熱 は 加熱 のための道具である<br>・発熱 により 熱 が生成される", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 900, "y": 120}}, {"data": {"id": "風", "label": "風", "type": "object", "description": "・送風 により 風 が生成される<br>・風 が 加熱 によって消費される", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 900, "y": 240}}, {"data": {"id": "温風", "label": "温風", "type": "object", "description": "・加熱 により 温風 が生成される<br>・温風 は 乾燥 のための道具である", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 900, "y": 360}}, {"data": {"id": "ヒーター", "label": "ヒーター", "type": "object", "description": "・ヒーター は ドライヤー の構成部品である<br>・ヒーター は 発熱 のための道具である", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 300, "y": 50}}, {"data": {"id": "モーター", "label": "モーター", "type": "object", "description": "・モーター は ドライヤー の構成部品である<br>・モーター は 回転 のための道具である", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 300, "y": 170}}, {"data": {"id": "ファン", "label": "ファン", "type": "object", "description": "・ファン は ドライヤー の構成部品である<br>・ファン は 送風 のための道具である", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 300, "y": 290}}, {"data": {"id": "スイッチ", "label": "スイッチ", "type": "object", "description": "・スイッチ は ドライヤー の構成部品である<br>・スイッチ は 送風 の発生条件である", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 300, "y": 410}}, {"data": {"id": "ドライヤー", "label": "ドライヤー", "type": "object", "description": "・スイッチ は ドライヤー の構成部品である<br>・ヒーター は ドライヤー の構成部品である<br>・ファン は ドライヤー の構成部品である<br>・モーター は ドライヤー の構成部品である", "requirements": [{"name": "デザイン・外観", "category": "②非機能要求", "positive_val": 100.0, "importance_val": 0.1013513513513513, "positive_str": "100.0%", "importance_str": "10.1%"}, {"name": "操作性・使いやすさ", "category": "②非機能要求", "positive_val": 85.71428571428571, "importance_val": 0.0945945945945946, "positive_str": "85.7%", "importance_str": "9.5%"}, {"name": "本体サイズ・重量", "category": "②非機能要求", "positive_val": 90.0, "importance_val": 0.0675675675675675, "positive_str": "90.0%", "importance_str": "6.8%"}, {"name": "耐久性", "category": "②非機能要求", "positive_val": 0.0, "importance_val": 0.0202702702702702, "positive_str": "0.0%", "importance_str": "2.0%"}, {"name": "動作音", "category": "②非機能要求", "positive_val": 0.0, "importance_val": 0.0135135135135135, "positive_str": "0.0%", "importance_str": "1.4%"}, {"name": "適合性", "category": "②非機能要求", "positive_val": 50.0, "importance_val": 0.0135135135135135, "positive_str": "50.0%", "importance_str": "1.4%"}], "border_width": 7.662162162162159, "total_importance": 0.3108108108108106, "weighted_pos": 80.43478260869568, "has_reqs": true, "is_root": true, "is_external": false}, "position": {"x": 0, "y": 150}}, {"data": {"id": "回転", "label": "回転", "type": "process", "description": "・モーター は 回転 のための道具である<br>・電気 が 回転 によって消費される", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 600, "y": 0}}, {"data": {"id": "発熱", "label": "発熱", "type": "process", "description": "・ヒーター は 発熱 のための道具である<br>・発熱 により 熱 が生成される<br>・電気 が 発熱 によって消費される", "requirements": [], "border_width": 3, "total_importance": 0, "weighted_pos": null, "has_reqs": false, "is_root": false, "is_external": false}, "position": {"x": 600, "y": 120}}, {"data": {"id": "送風", "label": "送風", "type": "process", "description": "・スイッチ は 送風 の発生条件である<br>・ファン は 送風 のための道具である<br>・送風 により 風 が生成される", "requirements": [{"name": "性能・風量・パワー", "category": "①機能要求", "positive_val": 77.77777777777779, "importance_val": 0.2432432432432432, "positive_str": "77.8%", "importance_str": "24.3%"}, {"name": "機能", "category": "①機能要求", "positive_val": 100.0, "importance_val": 0.027027027027027, "positive_str": "100.0%", "importance_str": "2.7%"}], "border_width": 7.054054054054053, "total_importance": 0.2702702702702702, "weighted_pos": 80.00000000000003, "has_reqs": true, "is_root": false, "is_external": false}, "position": {"x": 600, "y": 240}}, {"data": {"id": "加熱", "label": "加熱", "type": "process", "description": "・加熱 により 温風 が生成される<br>・熱 は 加熱 のための道具である<br>・風 が 加熱 によって消費される", "requirements": [{"name": "温度", "category": "①機能要求", "positive_val": 80.0, "importance_val": 0.0337837837837837, "positive_str": "80.0%", "importance_str": "3.4%"}, {"name": "機能", "category": "①機能要求", "positive_val": 100.0, "importance_val": 0.027027027027027, "positive_str": "100.0%", "importance_str": "2.7%"}], "border_width": 3.9121621621621605, "total_importance": 0.0608108108108107, "weighted_pos": 88.8888888888889, "has_reqs": true, "is_root": false, "is_external": false}, "position": {"x": 600, "y": 360}}, {"data": {"id": "乾燥", "label": "乾燥", "type": "process", "description": "・温風 は 乾燥 のための道具である", "requirements": [{"name": "速乾性・乾燥能力", "category": "①機能要求", "positive_val": 89.47368421052632, "importance_val": 0.1283783783783783, "positive_str": "89.5%", "importance_str": "12.8%"}, {"name": "髪への影響・仕上がり", "category": "①機能要求", "positive_val": 85.71428571428571, "importance_val": 0.0472972972972973, "positive_str": "85.7%", "importance_str": "4.7%"}, {"name": "機能", "category": "①機能要求", "positive_val": 100.0, "importance_val": 0.027027027027027, "positive_str": "100.0%", "importance_str": "2.7%"}], "border_width": 6.040540540540539, "total_importance": 0.20270270270270258, "weighted_pos": 90.00000000000001, "has_reqs": true, "is_root": false, "is_external": false}, "position": {"x": 600, "y": 480}}, {"data": {"id": "external_factors", "label": "外部要因", "type": "require", "description": "③関連する要素が存在しない外部要因", "requirements": [{"name": "価格・コストパフォーマンス", "category": "③外部要因", "positive_val": 95.23809523809524, "importance_val": 0.1418918918918918, "positive_str": "95.2%", "importance_str": "14.2%"}, {"name": "総合評価・満足度", "category": "③外部要因", "positive_val": 100.0, "importance_val": 0.054054054054054, "positive_str": "100.0%", "importance_str": "5.4%"}, {"name": "購入・配送", "category": "③外部要因", "positive_val": 100.0, "importance_val": 0.0135135135135135, "positive_str": "100.0%", "importance_str": "1.4%"}], "border_width": 6.141891891891889, "total_importance": 0.20945945945945932, "weighted_pos": 96.77419354838709, "has_reqs": true, "is_root": false, "is_external": true}, "position": {"x": 0, "y": 0}}, {"data": {"id": "e8", "source": "ドライヤー", "target": "ヒーター", "label": "Aggregation"}}, {"data": {"id": "e9", "source": "ドライヤー", "target": "モーター", "label": "Aggregation"}}, {"data": {"id": "e10", "source": "ドライヤー", "target": "ファン", "label": "Aggregation"}}, {"data": {"id": "e11", "source": "ドライヤー", "target": "スイッチ", "label": "Aggregation"}}, {"data": {"id": "e12", "source": "電気", "target": "回転", "label": "Consumption"}}, {"data": {"id": "e13", "source": "電気", "target": "発熱", "label": "Consumption"}}, {"data": {"id": "e14", "source": "モーター", "target": "回転", "label": "Instrument"}}, {"data": {"id": "e15", "source": "ヒーター", "target": "発熱", "label": "Instrument"}}, {"data": {"id": "e16", "source": "ファン", "target": "送風", "label": "Instrument"}}, {"data": {"id": "e17", "source": "発熱", "target": "熱", "label": "Result"}}, {"data": {"id": "e18", "source": "送風", "target": "風", "label": "Result"}}, {"data": {"id": "e19", "source": "加熱", "target": "温風", "label": "Result"}}, {"data": {"id": "e20", "source": "熱", "target": "加熱", "label": "Instrument"}}, {"data": {"id": "e21", "source": "風", "target": "加熱", "label": "Consumption"}}, {"data": {"id": "e22", "source": "スイッチ", "target": "送風", "label": "Enabling"}}, {"data": {"id": "e23", "source": "温風", "target": "乾燥", "label": "Instrument"}}]}.elements,
+      style: [
+        { selector: 'node', style: {
+          'label': 'data(label)', 'text-valign': 'center', 'width': 120, 'height': 50, 'background-color': '#fff',
+          'border-width': 'data(border_width)',
+          'border-color': (ele) => {
+            const d = ele.data();
+            if (d.has_reqs && d.weighted_pos !== null) {
+                if (d.weighted_pos > 50.1) return '#F08080';
+                if (d.weighted_pos < 49.9) return '#3498db';
+                return '#95a5a6';
+            }
+            if (d.is_external) return '#95a5a6';
+            return d.type.includes('process') ? '#F08080' : '#008000';
+          },
+          'shape': (ele) => {
+            const d = ele.data();
+            if (d.is_external) return 'octagon';
+            return d.type.includes('process') ? 'ellipse' : 'round-rectangle';
+          },
+          'font-size': 11
+        } },
+        { selector: 'edge', style: { 
+          'curve-style': 'bezier', 'label': 'data(label)', 'font-size': 11, 'text-rotation': 'autorotate', 
+          'line-color': '#333', 'width': 1.5, 'target-arrow-shape': 'triangle', 'target-arrow-color': '#333',
+          'text-background-color': '#ffffff', 'text-background-opacity': 0.8
+        } },
+        { selector: 'edge[label="Result"]', style: { 'width': 3, 'line-color': '#000', 'target-arrow-color': '#000' } },
+        { selector: 'edge[label="Consumption"]', style: { 'width': 1.5, 'line-color': '#000' } },
+        { selector: 'edge[label="Effect"]', style: { 'width': 2, 'source-arrow-shape': 'triangle', 'source-arrow-color': '#333' } },
+        { selector: 'edge[label="Instrument"]', style: { 'line-style': 'dashed', 'width': 1.5 } },
+        { selector: 'edge[label="Agent"]', style: { 'source-arrow-shape': 'ellipse', 'source-arrow-color': '#000', 'width': 2 } },
+        { selector: 'edge[label="Enabling"]', style: { 'line-color': '#aaa', 'target-arrow-color': '#aaa', 'width': 1 } },
+        { selector: 'edge[label="Aggregation"]', style: { 'target-arrow-shape': 'diamond', 'line-color': '#0066aa', 'target-arrow-color': '#0066aa', 'width': 2 } },
+        { selector: 'edge[label="Exhibition"]', style: { 'target-arrow-shape': 'circle', 'line-color': '#0066aa', 'target-arrow-color': '#0066aa' } },
+        { selector: 'edge[label="Specialization"]', style: { 'target-arrow-shape': 'triangle-tee', 'line-color': '#0066aa', 'target-arrow-color': '#0066aa' } },
+        { selector: 'edge[label="Instantiation"]', style: { 'line-style': 'dotted', 'line-color': '#0066aa', 'target-arrow-color': '#0066aa' } },
+        { selector: ':selected', style: { 'border-color': '#f1c40f', 'background-color': '#f0faff', 'border-width': 4 } }
+      ],
+      layout: { name: 'preset' }
+    });
+
+    cy.on('tap', 'node', function(evt){
+      const d = evt.target.data();
+      let reqsHtml = '';
+      if (d.requirements && d.requirements.length > 0) {
+        reqsHtml = '<h4>■ 関連要求 (' + d.requirements.length + '件)</h4>';
+        if (d.weighted_pos !== null) {
+           reqsHtml += '<p style="font-size:0.9em; color:#000; margin-top:-10px; margin-bottom:5px;">加重平均ポジティブ率: ' + d.weighted_pos.toFixed(1) + '%</p>';
+           reqsHtml += '<p style="font-size:0.9em; color:#000; margin-top:0px; margin-bottom:10px;">合計重要度: ' + (d.total_importance * 100).toFixed(1) + '%</p>';
+        }
+        d.requirements.forEach(r => {
+          reqsHtml += '<div class="req-box"><span class="req-name">' + r.name + '</span>ポジティブ: ' + r.positive_str + ' / 重要度: ' + r.importance_str + '</div>';
+        });
+      }
+      document.getElementById('details').innerHTML = '<p><strong>名前:</strong> ' + d.label + '</p><p><strong>要素タイプ:</strong> ' + d.type.toUpperCase() + '</p><p><strong>OPL:</strong><br>' + (d.description || '（なし）') + '</p>' + reqsHtml;
+    });
+  </script>
+</body>
+</html>
