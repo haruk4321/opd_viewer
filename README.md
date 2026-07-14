@@ -3,8 +3,7 @@
 
 Web上の製品記述とユーザーレビューから、製品のシステムモデル図（OPD: Object-Process Diagram）を自動生成する設計支援システムの、**モデル可視化ビューアー**です。
 
-**公開ページ:** https://<ユーザー名>.github.io/opd-viewer/
-（GitHub Pages 有効化後、このURLに書き換えてください）
+**公開ページ:** https://haruk4321.github.io/opd_viewer/
 
 ## 背景
 
